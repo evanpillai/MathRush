@@ -42,10 +42,12 @@
 
         .menu-character {
             position: absolute;
-            bottom: 35%; /* Centered more vertically */
-            left: 75%;   /* Moved to the middle-right */
-            width: 64px; height: 80px;
-            background: url('assets/sprites/SpriteSheet.png') no-repeat 0 0;
+            bottom: 25%; 
+            left: 75%;   
+            width: 64px; 
+            height: 80px;
+            /* Shifted background-position to row 2, column 1 (standard walking right start) */
+            background: url('assets/sprites/SpriteSheet.png') no-repeat -64px -160px;
             background-size: 1024px 1024px;
             image-rendering: pixelated;
             z-index: 2;
@@ -70,7 +72,6 @@
             height: 100%;
         }
 
-        /* Logo Styling */
         #logo-img {
             width: 400px;
             image-rendering: pixelated;

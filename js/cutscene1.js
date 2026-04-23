@@ -10,7 +10,7 @@ const cutsceneContainer = document.getElementById('cutscene-container');
         // 2. Play the video
         video.play().catch(error => {
             console.error("Video failed to play:", error);
-            startGame(); // Skip to game if video fails
+            startGame();
         });
     });
 
