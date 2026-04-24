@@ -17,7 +17,7 @@ const retryBtn = document.getElementById('retry-btn');
 let currentQuestion = null;
 let attackInterval;
 let lasersActive = false;
-let startDelay = 48494995;
+let startDelay = 5;
 let gameStartTime = null;
 let touchStartTime = null; 
 const GRACE_PERIOD = 1000; 
