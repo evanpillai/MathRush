@@ -82,3 +82,87 @@ function movePlayer() {
 }
 
 movePlayer();
+
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && window.gameStarted && !window.battleActive) {
+        createHitbox();
+    }
+});
+
+function createHitbox() {
+    const hitbox = document.createElement('div');
+    hitbox.className = 'attack-hitbox';
+    
+    // Size of the attack box
+    const boxWidth = 40;
+    const boxHeight = 40;
+    
+    // Default position (centered on player)
+    let hLeft = posX + (PLAYER_WIDTH / 2) - (boxWidth / 2);
+    let hTop = posY + (PLAYER_HEIGHT / 2) - (boxHeight / 2);
+
+    // Offset the box based on the direction (row) the player is facing
+    // Using your existing row logic: 0: Down, 1: Right, 2: Left, 3: Up
+    const offset = 40; 
+
+    if (row === 0 || row === 6 || row === 7) hTop += offset; // Facing Down
+    if (row === 3 || row === 4 || row === 5) hTop -= offset; // Facing Up
+    if (row === 1 || row === 4 || row === 6) hLeft += offset; // Facing Right
+    if (row === 2 || row === 5 || row === 7) hLeft -= offset; // Facing Left
+
+    hitbox.style.width = `${boxWidth}px`;
+    hitbox.style.height = `${boxHeight}px`;
+    hitbox.style.left = `${hLeft}px`;
+    hitbox.style.top = `${hTop}px`;
+
+    gameBox.appendChild(hitbox);
+
+    // Check for collision with boss immediately
+    checkBossHit(hitbox);
+
+    // Remove the box after 150ms
+    setTimeout(() => {
+        hitbox.remove();
+    }, 150);
+}
+
+function checkBossHit(hitbox) {
+    const bossZone = document.getElementById('boss-hitbox');
+    
+    // Safety check in case the boss hitbox hasn't loaded yet
+    if (!bossZone) return;
+
+    // Get the pixel positions and dimensions of the Boss Hitbox
+    const b = {
+        left: bossZone.offsetLeft,
+        right: bossZone.offsetLeft + bossZone.offsetWidth,
+        top: bossZone.offsetTop,
+        bottom: bossZone.offsetTop + bossZone.offsetHeight
+    };
+
+    // Get the pixel positions and dimensions of the Attack Hitbox
+    const h = {
+        left: hitbox.offsetLeft,
+        right: hitbox.offsetLeft + hitbox.offsetWidth,
+        top: hitbox.offsetTop,
+        bottom: hitbox.offsetTop + hitbox.offsetHeight
+    };
+
+    // The Collision Logic: 
+    // Is the Attack Box NOT to the left, NOT to the right, NOT above, and NOT below?
+    const isHitting = !(
+        h.right < b.left || 
+        h.left > b.right || 
+        h.bottom < b.top || 
+        h.top > b.bottom
+    );
+
+    if (isHitting) {
+        console.log("💥 DIRECT HIT ON BOSS!");
+        
+        // Optional: Add a visual effect to the boss image to show it was hit
+        const bossImg = document.getElementById('boss');
+        bossImg.style.filter = "brightness(2) contrast(2)";
+        setTimeout(() => bossImg.style.filter = "none", 100);
+    }
+}

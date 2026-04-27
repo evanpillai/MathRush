@@ -113,6 +113,62 @@ body, html {
             letter-spacing: 2px;
         }
 
+        #battle-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Dims the game world */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        #battle-question {
+            font-size: 48px;
+            color: #00ffcc;
+            text-shadow: 0 0 10px #00ffcc;
+            margin-bottom: 30px;
+        }
+
+        .answer-btn {
+            padding: 15px 50px;
+            margin: 10px;
+            font-size: 24px;
+            background: #ff0055;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .answer-btn:active {
+            transform: scale(0.9);
+        }
+
+        .attack-hitbox {
+            position: absolute;
+            background-color: rgba(255, 0, 0, 0.4); /* Transparent red */
+            border: 2px solid red;
+            pointer-events: none; /* So it doesn't block clicks */
+            z-index: 10;
+        }
+
+        #boss-hitbox {
+            position: absolute;
+            width: 60%;  
+            height: 30%; 
+            left: 20%;   
+            top: 10%;
+            
+            background-color: rgba(0, 255, 0, 0.3); /* Transparent Green for testing */
+            border: 2px dashed green;
+            z-index: 5; /* Keep it above the background but below the UI */
+        }
+
         /* --- Animations --- */
         @keyframes menu-float {
             0%, 100% { transform: translateY(0) scale(2.5); }
