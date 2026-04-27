@@ -13,6 +13,14 @@ body, html {
             overflow: hidden; background-color: rgb(28, 194, 240);
         }
 
+        #clouds {
+        width: 200%; /* Twice the width of the container */
+        height: 100%;
+        background-image: url('clouds.png');
+        background-repeat: repeat-x;
+        display: flex;
+        }
+
         /* --- Arco-Style Menu --- */
         #cutscene-container {
             display: flex;
