@@ -119,6 +119,27 @@ body, html {
             50% { transform: translateY(-15px) scale(2.5); }
         }
 
+        /* Fire Particle Styles */
+        .fire-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            z-index: 45; /* Just behind or around the boss */
+            pointer-events: none;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            50% { transform: translateY(-20px) scale(1.2); opacity: 0.8; }
+            100% { transform: translateY(-40px) scale(0); opacity: 0; }
+        }
+
+        /* Cute Boss "Glow" */
+        #boss.initializing {
+            filter: drop-shadow(0 0 15px #ff6600);
+            transition: filter 0.5s ease;
+        }
+
         /* --- UI & Death Screen --- */
         #storm-cloud { position: absolute; top: -25%; left: 0; width: 100%; height: 20%; background: #222; z-index: 60; filter: blur(10px); transition: top 1s ease-in-out; box-shadow: 0 10px 50px rgba(0,0,0,0.8); }
         .laser-beam { position: absolute; top: 15%; width: 12px; height: 0; background: linear-gradient(to bottom, #fff, #ff0000); box-shadow: 0 0 15px #ff0000; z-index: 55; animation: grow-down 0.3s forwards, beam-flicker 0.05s infinite; }
