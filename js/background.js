@@ -1,4 +1,4 @@
-const cloudTrack = document.getElementById('cloud-track');
+const cloudTrack = document.getElementById('clouds');
 const gameArea = document.getElementById('game-container');
 
 let cloudX = 0;
