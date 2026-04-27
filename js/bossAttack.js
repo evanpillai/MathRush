@@ -7,8 +7,8 @@ const tiles = document.querySelectorAll('.stone-tile');
 const player = document.getElementById('player');
 const gameContainer = document.getElementById('game-container');
 const stormCloud = document.getElementById('storm-cloud');
+const boss = document.getElementById('boss');
 
-// Death Screen
 const deathScreen = document.getElementById('death-screen');
 const finalTimeTxt = document.getElementById('final-time');
 const bestTimeTxt = document.getElementById('best-time');
@@ -22,14 +22,79 @@ let gameStartTime = null;
 let touchStartTime = null; 
 const GRACE_PERIOD = 1000; 
 
-// --- INITIAL COUNTDOWN ---
+const bossFlameContainer = document.createElement('div');
+bossFlameContainer.id = 'boss-flame-container';
+bossFlameContainer.style.position = 'absolute';
+bossFlameContainer.style.top = '0';
+bossFlameContainer.style.left = '0';
+bossFlameContainer.style.width = '100%';
+bossFlameContainer.style.height = '100%';
+bossFlameContainer.style.pointerEvents = 'none';
+bossFlameContainer.style.zIndex = '60';
+gameContainer.appendChild(bossFlameContainer);
+
+function transitionToFireBoss() {
+    const rect = boss.getBoundingClientRect();
+    const containerRect = gameContainer.getBoundingClientRect();
+
+    boss.style.transition = 'filter 2s, opacity 1s';
+    boss.style.filter = 'brightness(0) sepia(1) saturate(100) hue-rotate(-50deg) blur(5px)';
+    
+    for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+            if (startDelay <= 0) return;
+
+            const flame = document.createElement('img');
+            flame.src = 'images/flame.png';
+            flame.className = 'temp-flame';
+            flame.style.position = 'absolute';
+            flame.style.width = '40px';
+            flame.style.height = '40px';
+            flame.style.imageRendering = 'pixelated';
+            
+            const offsetX = (Math.random() * rect.width) - 20;
+            const offsetY = (Math.random() * rect.height) - 10;
+            
+            flame.style.left = `${rect.left - containerRect.left + offsetX}px`;
+            flame.style.top = `${rect.top - containerRect.top + offsetY}px`;
+            
+            flame.style.opacity = '0';
+            flame.style.transform = 'scale(0)';
+            flame.style.transition = 'all 0.5s ease-out';
+            
+            bossFlameContainer.appendChild(flame);
+            
+            requestAnimationFrame(() => {
+                flame.style.opacity = '1';
+                flame.style.transform = `scale(${1 + Math.random()})`;
+            });
+
+            if (i === 15) {
+                boss.src = 'images/fireboss.png';
+                boss.style.filter = 'drop-shadow(0 0 15px #ff4400)';
+            }
+
+            setTimeout(() => {
+                flame.style.opacity = '0';
+                flame.style.transform = 'scale(0) translateY(-20px)';
+                setTimeout(() => flame.remove(), 500);
+            }, 800);
+
+        }, i * 120);
+    }
+}
+
 const startTimerInterval = setInterval(() => {
     if (window.gameStarted) {
-        if (!gameStartTime) gameStartTime = Date.now();
+        if (!gameStartTime) {
+            gameStartTime = Date.now();
+            transitionToFireBoss();
+        }
         startDelay--;
         timerDisplay.innerText = startDelay;
         if (startDelay <= 0) {
             clearInterval(startTimerInterval);
+            bossFlameContainer.innerHTML = '';
             timerLabel.innerText = "TIME REMAINING: ";
             initAttack();
         }
