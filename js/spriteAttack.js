@@ -36,18 +36,42 @@ function generateNewQuestion() {
     });
 }
 
+const hpBar = document.getElementById('boss-hp-bar');
+
+function updateBossUI() {
+    // Ensure the bar doesn't go below 0%
+    const displayHP = Math.max(0, bossHealth);
+    hpBar.style.width = `${displayHP}%`;
+
+    // Color feedback: Turns redder as HP drops
+    if (displayHP < 40) {
+        hpBar.style.background = "linear-gradient(to right, #880000, #ff0000)";
+    }
+}
+
 function handleAnswer(isCorrect) {
     if (!battleActive) return;
 
     if (isCorrect) {
         bossHealth -= 5;
         console.log("Boss Health:", bossHealth);
-        // Add a visual flash or shake to the boss here
+        
+        // Update the visual bar
+        updateBossUI();
+
+        // Visual feedback on the boss sprite
+        const bossImg = document.getElementById('boss');
+        if (bossImg) {
+            bossImg.style.filter = "brightness(3) contrast(2)";
+            setTimeout(() => bossImg.style.filter = "none", 100);
+        }
     }
     
-    // Immediately show the next question
     generateNewQuestion();
 }
+    
+    
+
 
 function startBattleTimer() {
     const countdown = setInterval(() => {

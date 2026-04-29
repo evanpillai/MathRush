@@ -1,3 +1,5 @@
+import { startMathBattle } from './spriteAttack.js';
+
 const player = document.getElementById('player');
 const gameBox = document.getElementById('game-container');
 
@@ -164,5 +166,6 @@ function checkBossHit(hitbox) {
         const bossImg = document.getElementById('boss');
         bossImg.style.filter = "brightness(2) contrast(2)";
         setTimeout(() => bossImg.style.filter = "none", 100);
+        startMathBattle();
     }
 }

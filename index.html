@@ -58,6 +58,14 @@
         <div class="stone-tile" style="top: 75%; left: 80%; background-image: url('images/stonetile.png');"></div>
         
         <div id="player"></div>
+
+        <div id="boss-hp-container">
+        <div id="boss-hp-label">BOSS HEALTH</div>
+        <div id="boss-hp-bg">
+            <div id="boss-hp-bar"></div>
+        </div>
+    </div>
+
     </div>
 
     <div id="battle-overlay" style="display: none;">
@@ -97,8 +105,8 @@
         }
     </script>
     <script src="js/background.js"></script>
-    <script src="js/sprite.js"></script>
+    <script type="module" src="js/sprite.js"></script>
     <script type="module" src="js/bossAttack.js"></script>
-    <script src="js/spriteAttack.js"></script>
+    <script type="module" src="js/spriteAttack.js"></script>
 </body>
 </html>
