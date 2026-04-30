@@ -22,6 +22,12 @@ window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
 window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
 
 function movePlayer() {
+
+    if (window.isHitlag) {
+        requestAnimationFrame(movePlayer);
+        return; 
+    }
+
     let moveX = 0;
     let moveY = 0;
     let isMoving = false;
@@ -91,6 +97,18 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
+function triggerHitlag(duration = 100) { // duration in milliseconds
+    window.isHitlag = true;
+
+    // Optional: Add a slight CSS zoom or grayscale to emphasize the "freeze"
+    document.getElementById('game-container').style.filter = "brightness(1.2)";
+
+    setTimeout(() => {
+        window.isHitlag = false;
+        document.getElementById('game-container').style.filter = "none";
+    }, duration);
+}
+
 function createHitbox() {
     const hitbox = document.createElement('div');
     hitbox.className = 'attack-hitbox';
@@ -128,44 +146,85 @@ function createHitbox() {
     }, 150);
 }
 
-function checkBossHit(hitbox) {
-    const bossZone = document.getElementById('boss-hitbox');
+function triggerSlash(hitboxY) {
+    const slash = document.getElementById('slash-effect');
     
-    // Safety check in case the boss hitbox hasn't loaded yet
-    if (!bossZone) return;
+    // Set the vertical position of the slash to match the attack hitbox
+    slash.style.top = `${hitboxY}px`;
 
-    // Get the pixel positions and dimensions of the Boss Hitbox
-    const b = {
-        left: bossZone.offsetLeft,
-        right: bossZone.offsetLeft + bossZone.offsetWidth,
-        top: bossZone.offsetTop,
-        bottom: bossZone.offsetTop + bossZone.offsetHeight
-    };
+    slash.classList.add('active-slash');
 
-    // Get the pixel positions and dimensions of the Attack Hitbox
-    const h = {
-        left: hitbox.offsetLeft,
-        right: hitbox.offsetLeft + hitbox.offsetWidth,
-        top: hitbox.offsetTop,
-        bottom: hitbox.offsetTop + hitbox.offsetHeight
-    };
+    setTimeout(() => {
+        slash.classList.remove('active-slash');
+    }, 350);
+}
 
-    // The Collision Logic: 
-    // Is the Attack Box NOT to the left, NOT to the right, NOT above, and NOT below?
-    const isHitting = !(
-        h.right < b.left || 
-        h.left > b.right || 
-        h.bottom < b.top || 
-        h.top > b.bottom
+function isPixelCollision(hitbox, bossImg) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    
+    // Get exact screen positions
+    const hRect = hitbox.getBoundingClientRect();
+    const bRect = bossImg.getBoundingClientRect();
+
+    canvas.width = hRect.width;
+    canvas.height = hRect.height;
+
+    // The "Magic Math": 
+    // We need to draw the boss relative to the hitbox's top-left corner (0,0 of the canvas)
+    const drawX = bRect.left - hRect.left;
+    const drawY = bRect.top - hRect.top;
+
+    ctx.drawImage(bossImg, drawX, drawY, bRect.width, bRect.height);
+
+    try {
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        // Check every 4th byte (Alpha)
+        for (let i = 3; i < imgData.length; i += 4) {
+            if (imgData[i] > 10) return true; 
+        }
+    } catch (e) {
+        console.error("CORS Error: Image must be hosted locally to check pixels!", e);
+        return false;
+    }
+    return false;
+}
+
+function checkBossHit(hitbox) {
+    const bossImg = document.getElementById('boss');
+    if (!bossImg) return;
+
+    const bRect = bossImg.getBoundingClientRect();
+    const hRect = hitbox.getBoundingClientRect();
+
+    // 1. Check if boxes touch at all
+    const boxOverlap = !(
+        hRect.right < bRect.left || 
+        hRect.left > bRect.right || 
+        hRect.bottom < bRect.top || 
+        hRect.top > bRect.bottom
     );
 
-    if (isHitting) {
-        console.log("💥 DIRECT HIT ON BOSS!");
+    if (boxOverlap) {
+        console.log("Box overlap detected! Running pixel check...");
         
-        // Optional: Add a visual effect to the boss image to show it was hit
-        const bossImg = document.getElementById('boss');
-        bossImg.style.filter = "brightness(1) contrast(2)";
-        setTimeout(() => bossImg.style.filter = "none", 100);
-        startMathBattle();
+        if (isPixelCollision(hitbox, bossImg)) {
+            if (!window.battleActive && !window.isHitlag) {
+                // 1. Trigger the Visual Slash
+                const hRect = hitbox.getBoundingClientRect();
+                triggerSlash(hRect.top + (hRect.height / 2)); 
+                
+                // 2. Trigger the Hitlag (Freeze for 150ms)
+                triggerHitlag(150);
+
+                // 3. Delay the Math Battle slightly so the player sees the hit
+                setTimeout(() => {
+                    window.battleActive = true;
+                    startMathBattle();
+                }, 150); 
+            }
+        }
     }
 }
+
+

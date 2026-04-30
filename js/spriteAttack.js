@@ -82,11 +82,11 @@ function startBattleTimer() {
             clearInterval(countdown);
             endBattle();
         }
-    }, 1000);
+    }, 100);
 }
 
 function endBattle() {
-    battleActive = false;
+    window.battleActive = false;
     document.getElementById('battle-overlay').style.display = 'none';
     // Resume normal gameplay or trigger boss death
 }

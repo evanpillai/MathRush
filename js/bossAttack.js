@@ -20,7 +20,7 @@ let lasersActive = false;
 let startDelay = 5;
 let gameStartTime = null;
 let touchStartTime = null; 
-const GRACE_PERIOD = 1000; 
+const GRACE_PERIOD = 10000; 
 
 const bossFlameContainer = document.createElement('div');
 bossFlameContainer.id = 'boss-flame-container';
@@ -38,7 +38,6 @@ const startTimerInterval = setInterval(() => {
     if (window.gameStarted) {
         if (!gameStartTime) {
             gameStartTime = Date.now();
-            transitionToFireBoss();
         }
         startDelay--;
         timerDisplay.innerText = startDelay;

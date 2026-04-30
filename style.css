@@ -157,37 +157,10 @@ body, html {
             z-index: 10;
         }
 
-        #boss-hitbox {
-            position: absolute;
-            width: 60%;  
-            height: 30%; 
-            left: 20%;   
-            top: 10%;
-            
-            background-color: rgba(0, 255, 0, 0.3); /* Transparent Green for testing */
-            border: 2px dashed green;
-            z-index: 5; /* Keep it above the background but below the UI */
-        }
-
         /* --- Animations --- */
         @keyframes menu-float {
             0%, 100% { transform: translateY(0) scale(2.5); }
             50% { transform: translateY(-15px) scale(2.5); }
-        }
-
-        /* Fire Particle Styles */
-        .fire-particle {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            z-index: 45; /* Just behind or around the boss */
-            pointer-events: none;
-        }
-
-        @keyframes flicker {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            50% { transform: translateY(-20px) scale(1.2); opacity: 0.8; }
-            100% { transform: translateY(-40px) scale(0); opacity: 0; }
         }
 
         /* Cute Boss "Glow" */
@@ -229,6 +202,50 @@ body, html {
             background-color: #ff0055; /* Bright red/pink */
             transition: width 0.3s ease-out; /* Makes the bar slide down smoothly */
         }
+
+        #slash-effect {
+            position: absolute;
+            top: 50%; /* Position it in the middle vertically */
+            left: 0;
+            width: 100%;
+            height: 10px; /* Thickness of the horizontal cut */
+            pointer-events: none;
+            z-index: 999;
+            display: none;
+            transform: translateY(-50%); /* Centers it exactly on the 'top: 50%' line */
+        }
+
+        .active-slash {
+            display: block !important;
+            /* A bright horizontal beam: transparent on top/bottom, white in middle */
+            background: linear-gradient(
+                0deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.9) 40%, 
+                #ffffff 50%, 
+                rgba(255, 255, 255, 0.9) 60%, 
+                transparent 100%
+            );
+            /* Outer glow for a 'laser' effect */
+            box-shadow: 0 0 20px 2px rgba(255, 255, 255, 0.8);
+            animation: slash-horizontal 0.35s ease-out forwards;
+        }
+
+        @keyframes slash-horizontal {
+            0% {
+                transform: translateY(-50%) scaleX(0); /* Start tiny in the center */
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50%) scaleX(1.5); /* Stretch across the screen */
+                opacity: 0;
+            }
+        }
+
+        
 
         /* --- UI & Death Screen --- */
         #storm-cloud { position: absolute; top: -25%; left: 0; width: 100%; height: 20%; background: #222; z-index: 60; filter: blur(10px); transition: top 1s ease-in-out; box-shadow: 0 10px 50px rgba(0,0,0,0.8); }
