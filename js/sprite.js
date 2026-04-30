@@ -1,4 +1,4 @@
-import { startMathBattle } from './spriteAttack.js';
+import { startMathBattle,battleActive, setBattleActive } from './spriteAttack.js';
 
 const player = document.getElementById('player');
 const gameBox = document.getElementById('game-container');
@@ -92,7 +92,7 @@ function movePlayer() {
 movePlayer();
 
 window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && window.gameStarted && !window.battleActive) {
+    if (e.code === 'Space' && window.gameStarted && !battleActive) {
         createHitbox();
     }
 });
@@ -209,7 +209,7 @@ function checkBossHit(hitbox) {
         console.log("Box overlap detected! Running pixel check...");
         
         if (isPixelCollision(hitbox, bossImg)) {
-            if (!window.battleActive && !window.isHitlag) {
+            if (!battleActive && !window.isHitlag) {
                 // 1. Trigger the Visual Slash
                 const hRect = hitbox.getBoundingClientRect();
                 triggerSlash(hRect.top + (hRect.height / 2)); 
@@ -219,7 +219,8 @@ function checkBossHit(hitbox) {
 
                 // 3. Delay the Math Battle slightly so the player sees the hit
                 setTimeout(() => {
-                    window.battleActive = true;
+                    // battleActive = true;
+                    setBattleActive(true)
                     startMathBattle();
                 }, 150); 
             }

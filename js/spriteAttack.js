@@ -1,8 +1,11 @@
 let bossHealth = 100;
-let battleActive = false;
+export let battleActive = false;
 let battleTimer = 20;
 let currentCorrectAnswer = null;
 
+export function setBattleActive(active) {
+    battleActive = active
+}
 // Call this when the player touches the boss or triggers an attack
 export function startMathBattle() {
     battleActive = true;
@@ -65,9 +68,13 @@ function handleAnswer(isCorrect) {
             bossImg.style.filter = "brightness(1) contrast(2)";
             setTimeout(() => bossImg.style.filter = "none", 100);
         }
+
+        generateNewQuestion();
+    } else {
+        endBattle();
     }
     
-    generateNewQuestion();
+    
 }
     
     
@@ -86,7 +93,7 @@ function startBattleTimer() {
 }
 
 function endBattle() {
-    window.battleActive = false;
+    battleActive = false;
     document.getElementById('battle-overlay').style.display = 'none';
     // Resume normal gameplay or trigger boss death
 }
