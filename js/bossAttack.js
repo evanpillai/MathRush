@@ -33,56 +33,6 @@ bossFlameContainer.style.pointerEvents = 'none';
 bossFlameContainer.style.zIndex = '60';
 gameContainer.appendChild(bossFlameContainer);
 
-function transitionToFireBoss() {
-    const rect = boss.getBoundingClientRect();
-    const containerRect = gameContainer.getBoundingClientRect();
-
-    boss.style.transition = 'filter 2s, opacity 1s';
-    boss.style.filter = 'brightness(0) sepia(1) saturate(100) hue-rotate(-50deg) blur(5px)';
-    
-    for (let i = 0; i < 30; i++) {
-        setTimeout(() => {
-            if (startDelay <= 0) return;
-
-            const flame = document.createElement('img');
-            flame.src = 'images/flame.png';
-            flame.className = 'temp-flame';
-            flame.style.position = 'absolute';
-            flame.style.width = '40px';
-            flame.style.height = '40px';
-            flame.style.imageRendering = 'pixelated';
-            
-            const offsetX = (Math.random() * rect.width) - 20;
-            const offsetY = (Math.random() * rect.height) - 10;
-            
-            flame.style.left = `${rect.left - containerRect.left + offsetX}px`;
-            flame.style.top = `${rect.top - containerRect.top + offsetY}px`;
-            
-            flame.style.opacity = '0';
-            flame.style.transform = 'scale(0)';
-            flame.style.transition = 'all 0.5s ease-out';
-            
-            bossFlameContainer.appendChild(flame);
-            
-            requestAnimationFrame(() => {
-                flame.style.opacity = '1';
-                flame.style.transform = `scale(${1 + Math.random()})`;
-            });
-
-            if (i === 15) {
-                boss.src = 'images/fireboss.png';
-                boss.style.filter = 'drop-shadow(0 0 15px #ff4400)';
-            }
-
-            setTimeout(() => {
-                flame.style.opacity = '0';
-                flame.style.transform = 'scale(0) translateY(-20px)';
-                setTimeout(() => flame.remove(), 500);
-            }, 800);
-
-        }, i * 120);
-    }
-}
 
 const startTimerInterval = setInterval(() => {
     if (window.gameStarted) {

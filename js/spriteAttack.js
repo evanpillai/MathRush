@@ -62,7 +62,7 @@ function handleAnswer(isCorrect) {
         // Visual feedback on the boss sprite
         const bossImg = document.getElementById('boss');
         if (bossImg) {
-            bossImg.style.filter = "brightness(3) contrast(2)";
+            bossImg.style.filter = "brightness(1) contrast(2)";
             setTimeout(() => bossImg.style.filter = "none", 100);
         }
     }

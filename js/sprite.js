@@ -164,7 +164,7 @@ function checkBossHit(hitbox) {
         
         // Optional: Add a visual effect to the boss image to show it was hit
         const bossImg = document.getElementById('boss');
-        bossImg.style.filter = "brightness(2) contrast(2)";
+        bossImg.style.filter = "brightness(1) contrast(2)";
         setTimeout(() => bossImg.style.filter = "none", 100);
         startMathBattle();
     }
