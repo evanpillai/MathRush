@@ -1,4 +1,5 @@
 import { startMathBattle,battleActive, setBattleActive } from './spriteAttack.js';
+import { SWORDSLICE } from './const.js';
 
 const player = document.getElementById('player');
 const gameBox = document.getElementById('game-container');
@@ -153,6 +154,9 @@ function triggerSlash(hitboxY) {
     slash.style.top = `${hitboxY}px`;
 
     slash.classList.add('active-slash');
+
+    // Slice Sound
+    SWORDSLICE.play();
 
     setTimeout(() => {
         slash.classList.remove('active-slash');

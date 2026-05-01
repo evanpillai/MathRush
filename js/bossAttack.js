@@ -22,18 +22,6 @@ let gameStartTime = null;
 let touchStartTime = null; 
 const GRACE_PERIOD = 10000; 
 
-const bossFlameContainer = document.createElement('div');
-bossFlameContainer.id = 'boss-flame-container';
-bossFlameContainer.style.position = 'absolute';
-bossFlameContainer.style.top = '0';
-bossFlameContainer.style.left = '0';
-bossFlameContainer.style.width = '100%';
-bossFlameContainer.style.height = '100%';
-bossFlameContainer.style.pointerEvents = 'none';
-bossFlameContainer.style.zIndex = '60';
-gameContainer.appendChild(bossFlameContainer);
-
-
 const startTimerInterval = setInterval(() => {
     if (window.gameStarted) {
         if (!gameStartTime) {
@@ -43,7 +31,6 @@ const startTimerInterval = setInterval(() => {
         timerDisplay.innerText = startDelay;
         if (startDelay <= 0) {
             clearInterval(startTimerInterval);
-            bossFlameContainer.innerHTML = '';
             timerLabel.innerText = "TIME REMAINING: ";
             initAttack();
         }
