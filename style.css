@@ -1,262 +1,94 @@
+/* --- Global Reset --- */
 body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            overflow: hidden;
-            background-color: #111;
-            display: flex; justify-content: center; align-items: center;
-            font-family: 'Courier New', monospace;
-        }
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background-color: #111;
+    display: flex; justify-content: center; align-items: center;
+    font-family: 'Courier New', monospace;
+}
 
-        #game-container {
-            position: relative;
-            width: 100vh; height: 100vh;
-            overflow: hidden; background-color: rgb(28, 194, 240);
-        }
+#game-container {
+    position: relative;
+    width: 100vh; height: 100vh;
+    overflow: hidden; 
+    background-color: rgb(28, 194, 240);
+    z-index: 10;
+}
 
-        #clouds {
-        width: 200%; /* Twice the width of the container */
-        height: 100%;
-        background-image: url('clouds.png');
-        background-repeat: repeat-x;
-        display: flex;
-        }
+/* --- Player Health Bar --- */
+#player-health-bar {
+    position: absolute; 
+    top: 20px; left: 20px; 
+    z-index: 500; 
+    display: flex; gap: 10px; 
+    background: rgba(0, 0, 0, 0.6); 
+    padding: 12px; border-radius: 10px;
+    border: 2px solid #fff;
+    pointer-events: none;
+}
 
-        /* --- Arco-Style Menu --- */
-        #cutscene-container {
-            display: flex;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 9999;
-            background-color: #222;
-            overflow: hidden;
-        }
+.heart {
+    font-size: 30px; display: inline-block;
+    filter: drop-shadow(0 0 5px red);
+    transition: all 0.3s ease;
+}
 
-        .menu-background {
-            position: absolute;
-            width: 100%; height: 100%;
-            background: url('images/startscreen.png') no-repeat center bottom; 
-            background-size: cover;
-            image-rendering: pixelated;
-            z-index: 1;
-        }
+/* --- Immunity Bubble --- */
+#immunity-bubble {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    width: 120px; height: 120px;
+    border: 3px solid #00f2ff;
+    border-radius: 50%;
+    background: rgba(0, 242, 255, 0.2);
+    box-shadow: 0 0 20px #00f2ff, inset 0 0 10px #00f2ff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 101;
+}
 
-        .menu-character {
-            position: absolute;
-            bottom: 25%; 
-            left: 75%;   
-            width: 64px; 
-            height: 80px;
-            /* Shifted background-position to row 2, column 1 (standard walking right start) */
-            background: url('assets/sprites/SpriteSheet.png') no-repeat -64px -160px;
-            background-size: 1024px 1024px;
-            image-rendering: pixelated;
-            z-index: 2;
-            transform: scale(2.5);
-            animation: menu-float 3s ease-in-out infinite;
-        }
+.bubble-active {
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+    animation: bubble-pulse 0.5s infinite alternate;
+}
 
-        /* Boss removed from view */
-        .menu-boss {
-            display: none;
-        }
+@keyframes bubble-pulse {
+    from { box-shadow: 0 0 15px #00f2ff; }
+    to { box-shadow: 0 0 30px #00f2ff; }
+}
 
-        .menu-content {
-            position: relative;
-            z-index: 3;
-            padding-left: 8%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            width: 100%;
-            height: 100%;
-        }
+/* --- Menu & Cutscene --- */
+#cutscene-container {
+    display: flex; position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 1000; background-color: #000;
+}
 
-        #logo-img {
-            width: 400px;
-            image-rendering: pixelated;
-            margin-bottom: 20px;
-            filter: drop-shadow(6px 6px 0px #000);
-        }
+.menu-background { position: absolute; width: 100%; height: 100%; background: url('images/startscreen.png') no-repeat center bottom; background-size: cover; z-index: 1; }
+.menu-character { position: absolute; bottom: 25%; left: 75%; width: 64px; height: 80px; background: url('assets/sprites/SpriteSheet.png') no-repeat -64px -160px; background-size: 1024px 1024px; z-index: 2; transform: scale(2.5); animation: menu-float 3s ease-in-out infinite; }
+.menu-content { position: relative; z-index: 3; padding-left: 8%; display: flex; flex-direction: column; justify-content: center; width: 100%; height: 100%; transition: opacity 0.5s ease; }
+#cutscene-player { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 100; object-fit: contain; }
 
-        .menu-options {
-            display: flex;
-            flex-direction: column;
-        }
+/* --- Buttons & UI --- */
+.arco-button { background: none; border: none; color: white; font-family: 'Courier New', monospace; font-size: 64px; font-weight: bold; cursor: pointer; text-shadow: 6px 6px 0px #000; transition: all 0.2s; }
+.arco-button:hover { color: #ff0055; transform: translateX(20px); }
+#logo-img { width: 400px; margin-bottom: 20px; filter: drop-shadow(6px 6px 0px #000); }
 
-        .arco-button {
-            background: none;
-            border: none;
-            color: white;
-            font-family: 'Courier New', monospace;
-            font-size: 64px;
-            font-weight: bold;
-            text-align: left;
-            cursor: pointer;
-            padding: 10px 0;
-            text-shadow: 6px 6px 0px #000;
-            transition: all 0.2s;
-            letter-spacing: 4px;
-        }
+/* --- Game Elements --- */
+#player { position: absolute; width: 64px; height: 80px; z-index: 100; background-image: url('assets/sprites/SpriteSheet.png'); background-size: 1024px 1024px; image-rendering: pixelated; }
+#ui-layer { position: absolute; top: 100px; left: 10px; z-index: 200; }
+#question-box { background: rgba(0, 0, 0, 0.9); color: #fff; padding: 12px; border-left: 5px solid #ff0055; min-width: 250px; }
+.bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.stone-tile { position: absolute; width: 80px; height: 80px; z-index: 5; transform: translateX(-50%); display: flex; justify-content: center; align-items: center; }
 
-        .arco-button:hover {
-            color: #ff0055;
-            transform: translateX(20px);
-        }
+/* --- Death Screen --- */
+#death-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
 
-        .credits {
-            margin-top: 20px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 18px;
-            text-shadow: 2px 2px 0px #000;
-            letter-spacing: 2px;
-        }
-
-        #battle-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7); /* Dims the game world */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-
-        #battle-question {
-            font-size: 48px;
-            color: #00ffcc;
-            text-shadow: 0 0 10px #00ffcc;
-            margin-bottom: 30px;
-        }
-
-        .answer-btn {
-            padding: 15px 50px;
-            margin: 10px;
-            font-size: 24px;
-            background: #ff0055;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-
-        .answer-btn:active {
-            transform: scale(0.9);
-        }
-
-        .attack-hitbox {
-            position: absolute;
-            background-color: rgba(255, 0, 0, 0.4); /* Transparent red */
-            border: 2px solid red;
-            pointer-events: none; /* So it doesn't block clicks */
-            z-index: 10;
-        }
-
-        /* --- Animations --- */
-        @keyframes menu-float {
-            0%, 100% { transform: translateY(0) scale(2.5); }
-            50% { transform: translateY(-15px) scale(2.5); }
-        }
-
-        /* Cute Boss "Glow" */
-        #boss.initializing {
-            filter: drop-shadow(0 0 15px #ff6600);
-            transition: filter 0.5s ease;
-        }
-
-        #boss-hp-container {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 300px;
-        text-align: center;
-        z-index: 200;
-        }
-
-        #boss-hp-label {
-            color: white;
-            font-family: 'Arial', sans-serif;
-            font-weight: bold;
-            text-shadow: 2px 2px black;
-            margin-bottom: 5px;
-        }
-
-        #boss-hp-bg {
-            width: 100%;
-            height: 20px;
-            background-color: #444;
-            border: 2px solid white;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        #boss-hp-bar {
-            width: 100%; /* Starts at full health */
-            height: 100%;
-            background-color: #ff0055; /* Bright red/pink */
-            transition: width 0.3s ease-out; /* Makes the bar slide down smoothly */
-        }
-
-        #slash-effect {
-            position: absolute;
-            top: 50%; /* Position it in the middle vertically */
-            left: 0;
-            width: 100%;
-            height: 10px; /* Thickness of the horizontal cut */
-            pointer-events: none;
-            z-index: 999;
-            display: none;
-            transform: translateY(-50%); /* Centers it exactly on the 'top: 50%' line */
-        }
-
-        .active-slash {
-            display: block !important;
-            /* A bright horizontal beam: transparent on top/bottom, white in middle */
-            background: linear-gradient(
-                0deg, 
-                transparent 0%, 
-                rgba(255, 255, 255, 0.9) 40%, 
-                #ffffff 50%, 
-                rgba(255, 255, 255, 0.9) 60%, 
-                transparent 100%
-            );
-            /* Outer glow for a 'laser' effect */
-            box-shadow: 0 0 20px 2px rgba(255, 255, 255, 0.8);
-            animation: slash-horizontal 0.35s ease-out forwards;
-        }
-
-        @keyframes slash-horizontal {
-            0% {
-                transform: translateY(-50%) scaleX(0); /* Start tiny in the center */
-                opacity: 0;
-            }
-            20% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-50%) scaleX(1.5); /* Stretch across the screen */
-                opacity: 0;
-            }
-        }
-
-        
-
-        /* --- UI & Death Screen --- */
-        #storm-cloud { position: absolute; top: -25%; left: 0; width: 100%; height: 20%; background: #222; z-index: 60; filter: blur(10px); transition: top 1s ease-in-out; box-shadow: 0 10px 50px rgba(0,0,0,0.8); }
-        .laser-beam { position: absolute; top: 15%; width: 12px; height: 0; background: linear-gradient(to bottom, #fff, #ff0000); box-shadow: 0 0 15px #ff0000; z-index: 55; animation: grow-down 0.3s forwards, beam-flicker 0.05s infinite; }
-        @keyframes grow-down { to { height: 85%; } }
-        @keyframes beam-flicker { from { opacity: 0.8; transform: scaleX(1); } to { opacity: 1; transform: scaleX(1.2); } }
-        #ui-layer { position: absolute; top: 10px; left: 10px; z-index: 200; pointer-events: none; }
-        #question-box { background: rgba(0, 0, 0, 0.9); color: #fff; padding: 12px; border-left: 5px solid #ff0055; min-width: 250px; }
-        #death-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
-        .bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        .stone-tile { position: absolute; width: 80px; height: 80px; z-index: 5; transform: translateX(-50%); display: flex; justify-content: center; align-items: center; }
-        .answer-label { color: white; font-size: 32px; font-weight: bold; text-shadow: 2px 2px 0px black; }
-        #player { position: absolute; width: 64px; height: 80px; z-index: 100; background-image: url('assets/sprites/SpriteSheet.png'); background-size: 1024px 1024px; image-rendering: pixelated; }
-        #cutscene-player { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; object-fit: contain; z-index: 100; }
+@keyframes menu-float { 0%, 100% { transform: translateY(0) scale(2.5); } 50% { transform: translateY(-15px) scale(2.5); } }
+#storm-cloud { position: absolute; top: -25%; left: 0; width: 100%; height: 20%; background: #222; z-index: 60; filter: blur(10px); transition: top 1s ease-in-out; }
+.laser-beam { position: absolute; top: 15%; width: 12px; background: linear-gradient(to bottom, #fff, #ff0000); box-shadow: 0 0 15px #ff0000; z-index: 55; animation: grow-down 0.3s forwards, beam-flicker 0.05s infinite; }
+@keyframes grow-down { to { height: 85%; } }

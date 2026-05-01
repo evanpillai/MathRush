@@ -5,9 +5,10 @@ const timerDisplay = document.getElementById('timer-val');
 const timerLabel = document.getElementById('timer-label');
 const tiles = document.querySelectorAll('.stone-tile');
 const player = document.getElementById('player');
+const bubble = document.getElementById('immunity-bubble');
 const gameContainer = document.getElementById('game-container');
 const stormCloud = document.getElementById('storm-cloud');
-const boss = document.getElementById('boss');
+const hearts = document.querySelectorAll('.heart');
 
 const deathScreen = document.getElementById('death-screen');
 const finalTimeTxt = document.getElementById('final-time');
@@ -19,26 +20,23 @@ let attackInterval;
 let lasersActive = false;
 let startDelay = 5;
 let gameStartTime = null;
-let touchStartTime = null; 
-const GRACE_PERIOD = 10000; 
+
+// Health & Immunity
+let playerHealth = 3;
+let isInvulnerable = false;
+const IMMUNITY_DURATION = 1000; // 1 second
 
 const bossFlameContainer = document.createElement('div');
 bossFlameContainer.id = 'boss-flame-container';
 bossFlameContainer.style.position = 'absolute';
-bossFlameContainer.style.top = '0';
-bossFlameContainer.style.left = '0';
-bossFlameContainer.style.width = '100%';
-bossFlameContainer.style.height = '100%';
-bossFlameContainer.style.pointerEvents = 'none';
-bossFlameContainer.style.zIndex = '60';
+bossFlameContainer.style.top = '0'; bossFlameContainer.style.left = '0';
+bossFlameContainer.style.width = '100%'; bossFlameContainer.style.height = '100%';
+bossFlameContainer.style.pointerEvents = 'none'; bossFlameContainer.style.zIndex = '60';
 gameContainer.appendChild(bossFlameContainer);
-
 
 const startTimerInterval = setInterval(() => {
     if (window.gameStarted) {
-        if (!gameStartTime) {
-            gameStartTime = Date.now();
-        }
+        if (!gameStartTime) gameStartTime = Date.now();
         startDelay--;
         timerDisplay.innerText = startDelay;
         if (startDelay <= 0) {
@@ -52,10 +50,11 @@ const startTimerInterval = setInterval(() => {
 
 function initAttack() {
     lasersActive = false;
-    touchStartTime = null;
+    isInvulnerable = false;
+    bubble.classList.remove('bubble-active');
+    player.style.filter = "none";
     stormCloud.style.top = "-25%"; 
     document.querySelectorAll('.laser-beam').forEach(l => l.remove());
-    player.style.filter = "none";
 
     currentQuestion = mathQuestions[Math.floor(Math.random() * mathQuestions.length)];
     questionText.innerText = `BOSS: What is ${currentQuestion.question}?`;
@@ -121,7 +120,7 @@ function createLaserVisual(xPosition) {
 }
 
 function checkCollision() {
-    if (!lasersActive) return;
+    if (!lasersActive || isInvulnerable) return;
 
     const playerRect = player.getBoundingClientRect();
     const activeLasers = document.querySelectorAll('.laser-beam');
@@ -136,18 +135,34 @@ function checkCollision() {
     }
 
     if (isTouching) {
-        if (touchStartTime === null) {
-            touchStartTime = Date.now();
-            player.style.filter = "brightness(3) saturate(2) hue-rotate(90deg)"; 
-        } else if (Date.now() - touchStartTime > GRACE_PERIOD) {
-            triggerGameOver();
-            return;
-        }
+        takeDamage();
     } else {
-        touchStartTime = null;
-        player.style.filter = "none";
+        requestAnimationFrame(checkCollision);
     }
-    requestAnimationFrame(checkCollision);
+}
+
+function takeDamage() {
+    playerHealth--;
+    
+    if (hearts[playerHealth]) {
+        hearts[playerHealth].style.opacity = "0.1";
+        hearts[playerHealth].style.transform = "scale(0.8)";
+    }
+
+    if (playerHealth <= 0) {
+        triggerGameOver();
+    } else {
+        isInvulnerable = true;
+        bubble.classList.add('bubble-active');
+        player.style.filter = "brightness(1.5)";
+
+        setTimeout(() => {
+            isInvulnerable = false;
+            bubble.classList.remove('bubble-active');
+            player.style.filter = "none";
+            if (lasersActive) checkCollision();
+        }, IMMUNITY_DURATION);
+    }
 }
 
 function triggerGameOver() {

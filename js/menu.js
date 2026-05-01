@@ -1,25 +1,26 @@
 const cutsceneContainer = document.getElementById('cutscene-container');
-        const video = document.getElementById('cutscene-player');
-        const startBtn = document.getElementById('start-btn');
-        const menuContent = document.querySelector('.menu-content');
-        const menuChar = document.querySelector('.menu-character');
-        const menuBoss = document.querySelector('.menu-boss');
-        const menuBg = document.querySelector('.menu-background');
-        
-        window.gameStarted = false;
+const video = document.getElementById('cutscene-player');
+const startBtn = document.getElementById('start-btn');
+const menuContent = document.querySelector('.menu-content');
 
-        startBtn.addEventListener('click', () => {
-            menuContent.style.display = 'none';
-            menuChar.style.display = 'none';
-            menuBoss.style.display = 'none';
-            menuBg.style.display = 'none';
-            video.style.display = 'block';
-            video.play().catch(() => startGame());
-        });
+window.gameStarted = false;
 
-        video.onended = () => startGame();
+startBtn.addEventListener('click', () => {
+    // Hide the text/buttons immediately
+    menuContent.style.opacity = '0';
+    menuContent.style.pointerEvents = 'none';
+    
+    // Show and play video
+    video.style.display = 'block';
+    video.play().catch(() => startGame());
+});
 
-        function startGame() {
-            cutsceneContainer.style.display = 'none';
-            window.gameStarted = true;
-        }
+// If the user clicks the video, they can skip it (optional)
+video.addEventListener('click', () => startGame());
+
+video.onended = () => startGame();
+
+function startGame() {
+    cutsceneContainer.style.display = 'none';
+    window.gameStarted = true;
+}
