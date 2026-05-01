@@ -12,17 +12,21 @@
         <div class="menu-background"></div>
         <div class="menu-character"></div>
         <div class="menu-boss"></div>
+
         <div class="menu-content">
             <img src="images/logo.png" id="logo-img" alt="Math Rush Logo">
+            
             <div class="menu-options">
                 <button id="start-btn" class="arco-button">PLAY</button>
             </div>
             <div class="credits">BY EVAN AND DEREK</div>
         </div>
+
         <video id="cutscene-player">
             <source src="assets/videos/OrangeBossCutscene.mp4" type="video/mp4">
         </video>
     </div>
+
 
     <div id="death-screen">
         <h1 style="font-size: 60px; color: #ff0055; margin: 0;">Game Over</h1>
@@ -33,7 +37,6 @@
 
     <div id="game-container">
         <div id="storm-cloud"></div>
-        
         <div id="ui-layer">
             <div id="question-box">
                 <span id="question-text">WAITING FOR BOSS...</span>
@@ -43,46 +46,41 @@
                 </div>
             </div>
         </div>
-
-        <div id="player-health-bar">
-            <span class="heart">❤️</span>
-            <span class="heart">❤️</span>
-            <span class="heart">❤️</span>
-        </div>
-
         <img id="sky" class="bg-layer" src="images/sky.png">
         <img id="clouds" class="bg-layer" src="images/clouds.png">
         <img id="grass" class="bg-layer" src="images/grass.png">
+        
         <img id="boss" class="bg-layer" src="assets/sprites/OrangeBoss.png">
+        
         
         <div class="stone-tile" style="top: 75%; left: 20%; background-image: url('images/stonetile.png');"></div>
         <div class="stone-tile" style="top: 75%; left: 50%; background-image: url('images/stonetile.png');"></div>
         <div class="stone-tile" style="top: 75%; left: 80%; background-image: url('images/stonetile.png');"></div>
         
-        <div id="player">
-            <div id="immunity-bubble"></div>
-        </div>
+        <div id="player"></div>
 
         <div id="boss-hp-container">
-            <div id="boss-hp-label">BOSS HEALTH</div>
-            <div id="boss-hp-bg">
-                <div id="boss-hp-bar"></div>
-            </div>
+        <div id="boss-hp-label">BOSS HEALTH</div>
+        <div id="boss-hp-bg">
+            <div id="boss-hp-bar"></div>
+        </div>
+
         </div>
 
         <div id="slash-effect"></div>
+
     </div>
 
     <div id="battle-overlay" style="display: none;">
-        <div id="battle-question">12 + 5 = ?</div>
-        <div id="answer-grid">
-            <button class="answer-btn">15</button>
-            <button class="answer-btn">17</button>
-            <button class="answer-btn">20</button>
-        </div>
+    <div id="battle-question">12 + 5 = ?</div>
+    <div id="answer-grid">
+        <button class="answer-btn">15</button>
+        <button class="answer-btn">17</button>
+        <button class="answer-btn">20</button>
+    </div>
     </div>  
 
-    <script src="js/menu.js"></script>
+    <script src="js/menu.js"> </script>
     <script src="js/background.js"></script>
     <script type="module" src="js/sprite.js"></script>
     <script type="module" src="js/bossAttack.js"></script>
