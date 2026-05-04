@@ -21,8 +21,8 @@ let attackInterval;
 let lasersActive = false;
 let startDelay = 5;
 let gameStartTime = null;
-let touchStartTime = null; 
-const GRACE_PERIOD = 1000; 
+let touchStartTime = null;
+const GRACE_PERIOD = 1000;
 
 const startTimerInterval = setInterval(() => {
     if (gameStarted) {
@@ -46,13 +46,12 @@ export function setLasers(active) {
 function initAttack() {
     lasersActive = false;
     touchStartTime = null;
-    stormCloud.style.top = "-25%"; 
+    stormCloud.style.top = "-25%";
     document.querySelectorAll('.laser-beam').forEach(l => l.remove());
     player.style.filter = "none";
 
     currentQuestion = mathQuestions[Math.floor(Math.random() * mathQuestions.length)];
     questionText.innerText = `BOSS: What is ${currentQuestion.question}?`;
-    
     let answers = [currentQuestion.answer];
     while (answers.length < 3) {
         let fake = Math.floor(Math.random() * 50).toString();
@@ -70,7 +69,7 @@ function initAttack() {
 }
 
 function startAttackTimer() {
-    let timeLeft = 7; 
+    let timeLeft = 7;
     timerDisplay.innerText = timeLeft;
     attackInterval = setInterval(() => {
         timeLeft--;
@@ -91,19 +90,45 @@ function fireLasers() {
     for (let x = 0; x < containerRect.width; x += 25) {
         const relLeft = safeRect.left - containerRect.left;
         const relRight = safeRect.right - containerRect.left;
-        if (x > (relLeft - 10) && x < (relRight + 10)) continue; 
+        if (x > (relLeft - 10) && x < (relRight + 10)) continue;
         createLaserVisual(x);
     }
 
     lasersActive = true;
     checkCollision();
 
+    // End attack after 4 seconds and enter cooldown
     setTimeout(() => {
         if (lasersActive) {
             lasersActive = false;
-            initAttack();
+            
+            // Cleanup visuals
+            document.querySelectorAll('.laser-beam').forEach(l => l.remove());
+            stormCloud.style.top = "-25%";
+            player.style.filter = "none";
+            questionText.innerText = "BOSS IS RECHARGING...";
+
+            // Start 10 second cooldown
+            startCooldown(10);
         }
     }, 4000);
+}
+
+function startCooldown(duration) {
+    let cooldownLeft = duration;
+    timerLabel.innerText = "COOLDOWN: ";
+    timerDisplay.innerText = cooldownLeft;
+
+    const cooldownInterval = setInterval(() => {
+        cooldownLeft--;
+        timerDisplay.innerText = cooldownLeft;
+
+        if (cooldownLeft <= 0) {
+            clearInterval(cooldownInterval);
+            timerLabel.innerText = "TIME REMAINING: ";
+            initAttack(); // Restart attack cycle
+        }
+    }, 1000);
 }
 
 function createLaserVisual(xPosition) {
@@ -131,7 +156,7 @@ function checkCollision() {
     if (isTouching) {
         if (touchStartTime === null) {
             touchStartTime = Date.now();
-            player.style.filter = "brightness(3) saturate(2) hue-rotate(90deg)"; 
+            player.style.filter = "brightness(3) saturate(2) hue-rotate(90deg)";
         } else if (Date.now() - touchStartTime > GRACE_PERIOD) {
             triggerGameOver();
             return;
@@ -157,5 +182,3 @@ function triggerGameOver() {
 }
 
 retryBtn.addEventListener('click', () => location.reload());
-
-
