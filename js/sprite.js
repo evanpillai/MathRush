@@ -1,5 +1,6 @@
 import { startMathBattle,battleActive, setBattleActive } from './spriteAttack.js';
 import { SWORDSLICE } from './const.js';
+import { gameStarted } from './menu.js';
 
 const player = document.getElementById('player');
 const gameBox = document.getElementById('game-container');
@@ -93,7 +94,7 @@ function movePlayer() {
 movePlayer();
 
 window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && window.gameStarted && !battleActive) {
+    if (e.code === 'Space' && gameStarted && !battleActive) {
         createHitbox();
     }
 });

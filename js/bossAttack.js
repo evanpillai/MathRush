@@ -1,4 +1,5 @@
 import mathQuestions from './questions.js';
+import { setGameStarted, gameStarted } from './menu.js';
 
 const questionText = document.getElementById('question-text');
 const timerDisplay = document.getElementById('timer-val');
@@ -14,16 +15,17 @@ const finalTimeTxt = document.getElementById('final-time');
 const bestTimeTxt = document.getElementById('best-time');
 const retryBtn = document.getElementById('retry-btn');
 
+
 let currentQuestion = null;
 let attackInterval;
 let lasersActive = false;
 let startDelay = 5;
 let gameStartTime = null;
 let touchStartTime = null; 
-const GRACE_PERIOD = 10000; 
+const GRACE_PERIOD = 1000; 
 
 const startTimerInterval = setInterval(() => {
-    if (window.gameStarted) {
+    if (gameStarted) {
         if (!gameStartTime) {
             gameStartTime = Date.now();
         }
@@ -36,6 +38,10 @@ const startTimerInterval = setInterval(() => {
         }
     }
 }, 1000);
+
+export function setLasers(active) {
+    lasersActive = active
+}
 
 function initAttack() {
     lasersActive = false;
@@ -151,3 +157,5 @@ function triggerGameOver() {
 }
 
 retryBtn.addEventListener('click', () => location.reload());
+
+

@@ -1,3 +1,6 @@
+const winScreen = document.getElementById('win-screen');
+const winRetryBtn = document.getElementById('win-retry-btn');
+
 let bossHealth = 100;
 export let battleActive = false;
 let battleTimer = 20;
@@ -58,6 +61,9 @@ function handleAnswer(isCorrect) {
     if (isCorrect) {
         bossHealth -= 5;
         console.log("Boss Health:", bossHealth);
+        if (bossHealth<=0) {
+            playerWin();
+        }
         
         // Update the visual bar
         updateBossUI();
@@ -76,9 +82,6 @@ function handleAnswer(isCorrect) {
     
     
 }
-    
-    
-
 
 function startBattleTimer() {
     const countdown = setInterval(() => {
@@ -97,3 +100,11 @@ function endBattle() {
     document.getElementById('battle-overlay').style.display = 'none';
     // Resume normal gameplay or trigger boss death
 }
+
+
+function playerWin() {
+    winScreen.style.display = 'flex';
+}
+
+winRetryBtn.addEventListener('click', () => location.reload());
+

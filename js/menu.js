@@ -1,3 +1,9 @@
+export let gameStarted = false;
+
+export function setGameStarted(active) {
+    gameStarted = active;
+}
+
 const cutsceneContainer = document.getElementById('cutscene-container');
         const video = document.getElementById('cutscene-player');
         const startBtn = document.getElementById('start-btn');
@@ -6,7 +12,7 @@ const cutsceneContainer = document.getElementById('cutscene-container');
         const menuBoss = document.querySelector('.menu-boss');
         const menuBg = document.querySelector('.menu-background');
         
-        window.gameStarted = false;
+    
 
         startBtn.addEventListener('click', () => {
             menuContent.style.display = 'none';
@@ -21,5 +27,5 @@ const cutsceneContainer = document.getElementById('cutscene-container');
 
         function startGame() {
             cutsceneContainer.style.display = 'none';
-            window.gameStarted = true;
+            gameStarted = true;
         }
