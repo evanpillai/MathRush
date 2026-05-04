@@ -1,10 +1,14 @@
 const winScreen = document.getElementById('win-screen');
 const winRetryBtn = document.getElementById('win-retry-btn');
+const timerBar = document.getElementById('timer-bar');
+const timerText = document.getElementById('timer-text');
 
 let bossHealth = 100;
 export let battleActive = false;
 let battleTimer = 20;
+const MAXBATTLETIME = 20;
 let currentCorrectAnswer = null;
+let battleInterval = null;
 
 export function setBattleActive(active) {
     battleActive = active
@@ -13,6 +17,16 @@ export function setBattleActive(active) {
 export function startMathBattle() {
     battleActive = true;
     battleTimer = 20;
+
+    timerBar.style.transition = 'none'; // Disable transition for instant reset
+    timerBar.style.width = '100%';
+    timerBar.style.backgroundColor = '#00ff00';
+    timerText.innerText = `${MAXBATTLETIME}s`;
+
+    setTimeout(() => {
+        timerBar.style.transition = 'width 1s linear, background-color 0.5s';
+    }, 50);
+
     document.getElementById('battle-overlay').style.display = 'flex';
     
     generateNewQuestion();
@@ -84,15 +98,27 @@ function handleAnswer(isCorrect) {
 }
 
 function startBattleTimer() {
-    const countdown = setInterval(() => {
+    if (battleInterval) clearInterval(battleInterval);
+
+    battleInterval = setInterval(() => {
         battleTimer--;
-        // Update a UI element to show time remaining
-        
-        if (battleTimer <= 0 || bossHealth <= 0) {
-            clearInterval(countdown);
+
+        // Update Text
+        timerText.innerText = `${battleTimer}s`;
+
+        // Update Bar Width Percentage
+        const timePercentage = (battleTimer / MAXBATTLETIME) * 100;
+        timerBar.style.width = `${Math.max(0, timePercentage)}%`;
+
+        // Color Feedback for Timer
+        if (timePercentage < 50) timerBar.style.backgroundColor = "#ffcc00"; // Yellow
+        if (timePercentage < 25) timerBar.style.backgroundColor = "#ff4444"; // Red
+
+        if (battleTimer < 0 || bossHealth <= 0) {
             endBattle();
+            
         }
-    }, 100);
+    }, 1000);
 }
 
 function endBattle() {
