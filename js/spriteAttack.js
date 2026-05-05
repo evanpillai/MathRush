@@ -74,7 +74,7 @@ function handleAnswer(isCorrect, clickedBtn) {
 
     if (isCorrect) {
         clickedBtn.style.backgroundColor = "#2ecc71"; // Green
-        bossHealth -= 1;
+        bossHealth -= 2;
         updateBossUI();
 
         const bossImg = document.getElementById('boss');

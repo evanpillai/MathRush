@@ -74,18 +74,10 @@ body, html {
         }
 
         #logo-img {
-            /* Original Properties */
             width: 400px;
             image-rendering: pixelated;
-            margin-bottom: 50px;
+            margin-bottom: 20px;
             filter: drop-shadow(6px 6px 0px #000);
-
-            /* Permanent Movement and Scaling */
-            /* Moves it 100px to the left and makes it 50% larger */
-            transform: translateX(-15px) scale(1.5);
-            
-            /* Optional: Ensures the scaling doesn't push it off-center vertically */
-            transform-origin: center; 
         }
 
         .menu-options {
@@ -126,7 +118,6 @@ body, html {
             font-size: 3vmin;
             text-shadow: 2px 2px 0px #000;
             letter-spacing: 2px;
-            top: 20%;
         }
 
         #battle-overlay {
