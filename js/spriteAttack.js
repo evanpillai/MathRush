@@ -10,8 +10,8 @@ const hpBar = document.getElementById('boss-hp-bar');
 
 let bossHealth = 100;
 export let battleActive = false;
-let battleTimer = 20;
-const MAXBATTLETIME = 20;
+let battleTimer = 10;
+const MAXBATTLETIME = 10;
 let currentQuestionObj = null;
 let battleInterval = null;
 
@@ -29,7 +29,7 @@ export function setBattleActive(active) {
 
 export function startMathBattle() {
     battleActive = true;
-    battleTimer = 20;
+    battleTimer = 10;
     timerBar.style.transition = 'none';
     timerBar.style.width = '100%';
     timerBar.style.backgroundColor = '#00ff00';
@@ -58,7 +58,7 @@ function generateNewQuestion() {
 
     buttons.forEach((btn, index) => {
         btn.innerText = answers[index];
-        btn.style.backgroundColor = "#ff0055"; // Reset color
+        btn.style.backgroundColor = "#1f59cf"; // Reset color
         btn.onclick = () => handleAnswer(btn.innerText === currentQuestionObj.answer, btn);
     });
 }
@@ -74,7 +74,7 @@ function handleAnswer(isCorrect, clickedBtn) {
 
     if (isCorrect) {
         clickedBtn.style.backgroundColor = "#2ecc71"; // Green
-        bossHealth -= 2;
+        bossHealth -= 5;
         updateBossUI();
 
         const bossImg = document.getElementById('boss');
