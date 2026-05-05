@@ -6,6 +6,7 @@ import { bossInvulnerable } from './bossAttack.js';
 const player = document.getElementById('player');
 const gameBox = document.getElementById('game-container');
 
+
 //start in center
 let posX = gameBox.clientWidth / 2 - 40;
 let posY = gameBox.clientHeight * 0.7;
