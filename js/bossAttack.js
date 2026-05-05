@@ -30,6 +30,7 @@ const GRACE_PERIOD = 1000;
 const startTimerInterval = setInterval(() => {
     if (gameStarted) {
         bossInvulnerable = true;
+        boss.style.filter = 'grayscale(100%)';
         if (!gameStartTime) {
             gameStartTime = Date.now();
         }
