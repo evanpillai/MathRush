@@ -1,6 +1,6 @@
 import mathQuestions from './questions.js';
 import { setGameStarted, gameStarted } from './menu.js';
-import { mistakeTracker, renderMistakes } from './spriteAttack.js';
+import { mistakeDetails, renderMistakes } from './spriteAttack.js';
 
 const questionText = document.getElementById('question-text');
 const timerDisplay = document.getElementById('timer-val');
@@ -27,9 +27,7 @@ const GRACE_PERIOD = 1000;
 
 const startTimerInterval = setInterval(() => {
     if (gameStarted) {
-        if (!gameStartTime) {
-            gameStartTime = Date.now();
-        }
+        if (!gameStartTime) gameStartTime = Date.now();
         startDelay--;
         timerDisplay.innerText = startDelay;
         if (startDelay <= 0) {
@@ -40,9 +38,7 @@ const startTimerInterval = setInterval(() => {
     }
 }, 1000);
 
-export function setLasers(active) {
-    lasersActive = active
-}
+export function setLasers(active) { lasersActive = active; }
 
 function initAttack() {
     lasersActive = false;
@@ -114,15 +110,13 @@ function startCooldown(duration) {
     let cooldownLeft = duration;
     timerLabel.innerText = "COOLDOWN: ";
     timerDisplay.innerText = cooldownLeft;
-
     const cooldownInterval = setInterval(() => {
         cooldownLeft--;
         timerDisplay.innerText = cooldownLeft;
-
         if (cooldownLeft <= 0) {
             clearInterval(cooldownInterval);
             timerLabel.innerText = "TIME REMAINING: ";
-            initAttack(); 
+            initAttack();
         }
     }, 1000);
 }
@@ -154,14 +148,17 @@ function checkCollision() {
             touchStartTime = Date.now();
             player.style.filter = "brightness(3) saturate(2) hue-rotate(90deg)";
         } else if (Date.now() - touchStartTime > GRACE_PERIOD) {
-            // Check if they were standing on a tile with a wrong answer when hit by laser
+            // Check if player is on a tile (even if incorrect) to log the mistake
             const standingTile = Array.from(tiles).find(t => {
                 const r = t.getBoundingClientRect();
                 return playerRect.left < r.right && playerRect.right > r.left;
             });
             
             if (standingTile && standingTile.dataset.value !== currentQuestion.answer) {
-                mistakeTracker[currentQuestion.type]++;
+                mistakeDetails[currentQuestion.type].push({
+                    q: currentQuestion.question,
+                    a: currentQuestion.answer
+                });
             }
             
             triggerGameOver();
@@ -185,7 +182,7 @@ function triggerGameOver() {
     finalTimeTxt.innerText = survived;
     bestTimeTxt.innerText = best;
     
-    // Render mistakes to death screen
+    // Display clickable mistakes on death screen
     renderMistakes('death-mistakes');
     
     deathScreen.style.display = 'flex';

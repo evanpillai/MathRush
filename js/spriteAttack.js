@@ -10,16 +10,15 @@ let bossHealth = 100;
 export let battleActive = false;
 let battleTimer = 20;
 const MAXBATTLETIME = 20;
-let currentCorrectAnswer = null;
-let currentQuestionType = null;
+let currentQuestionObj = null;
 let battleInterval = null;
 
-// Track mistakes by type
-export const mistakeTracker = {
-    addition: 0,
-    subtraction: 0,
-    multiplication: 0,
-    division: 0
+// Track detailed mistakes for the review screen
+export const mistakeDetails = {
+    addition: [],
+    subtraction: [],
+    multiplication: [],
+    division: []
 };
 
 export function setBattleActive(active) {
@@ -29,7 +28,6 @@ export function setBattleActive(active) {
 export function startMathBattle() {
     battleActive = true;
     battleTimer = 20;
-
     timerBar.style.transition = 'none';
     timerBar.style.width = '100%';
     timerBar.style.backgroundColor = '#00ff00';
@@ -40,22 +38,16 @@ export function startMathBattle() {
     }, 50);
 
     document.getElementById('battle-overlay').style.display = 'flex';
-    
     generateNewQuestion();
     startBattleTimer();
 }
 
 function generateNewQuestion() {
-    const q = mathQuestions[Math.floor(Math.random() * mathQuestions.length)];
-    currentCorrectAnswer = q.answer;
-    currentQuestionType = q.type;
-
-    document.getElementById('battle-question').innerText = `${q.question} = ?`;
+    currentQuestionObj = mathQuestions[Math.floor(Math.random() * mathQuestions.length)];
+    document.getElementById('battle-question').innerText = `${currentQuestionObj.question} = ?`;
     
     const buttons = document.querySelectorAll('.answer-btn');
-    const correctIndex = Math.floor(Math.random() * 3);
-    
-    let answers = [currentCorrectAnswer];
+    let answers = [currentQuestionObj.answer];
     while (answers.length < 3) {
         let fake = Math.floor(Math.random() * 50).toString();
         if (!answers.includes(fake)) answers.push(fake);
@@ -64,23 +56,19 @@ function generateNewQuestion() {
 
     buttons.forEach((btn, index) => {
         btn.innerText = answers[index];
-        btn.style.backgroundColor = "#ff0055"; // Reset to default
-        btn.onclick = () => handleAnswer(btn.innerText === currentCorrectAnswer, btn);
+        btn.style.backgroundColor = "#ff0055"; // Reset color
+        btn.onclick = () => handleAnswer(btn.innerText === currentQuestionObj.answer, btn);
     });
 }
 
 function updateBossUI() {
     const displayHP = Math.max(0, bossHealth);
     hpBar.style.width = `${displayHP}%`;
-    if (displayHP < 40) {
-        hpBar.style.background = "linear-gradient(to right, #880000, #ff0000)";
-    }
+    if (displayHP < 40) hpBar.style.background = "linear-gradient(to right, #880000, #ff0000)";
 }
 
 function handleAnswer(isCorrect, clickedBtn) {
     if (!battleActive) return;
-
-    const buttons = document.querySelectorAll('.answer-btn');
 
     if (isCorrect) {
         clickedBtn.style.backgroundColor = "#2ecc71"; // Green
@@ -93,24 +81,25 @@ function handleAnswer(isCorrect, clickedBtn) {
             setTimeout(() => bossImg.style.filter = "none", 100);
         }
 
-        if (bossHealth <= 0) {
-            setTimeout(playerWin, 500);
-        } else {
-            setTimeout(generateNewQuestion, 500);
-        }
+        if (bossHealth <= 0) setTimeout(playerWin, 500);
+        else setTimeout(generateNewQuestion, 500);
     } else {
-        // Wrong answer
-        mistakeTracker[currentQuestionType]++;
+        // Log mistake details
+        mistakeDetails[currentQuestionObj.type].push({
+            q: currentQuestionObj.question,
+            a: currentQuestionObj.answer
+        });
+
         clickedBtn.style.backgroundColor = "#e74c3c"; // Red
         
-        // Find and highlight the correct one
-        buttons.forEach(btn => {
-            if (btn.innerText === currentCorrectAnswer) {
-                btn.style.backgroundColor = "#2ecc71"; // Green
+        // Show correct answer in green
+        document.querySelectorAll('.answer-btn').forEach(btn => {
+            if (btn.innerText === currentQuestionObj.answer) {
+                btn.style.backgroundColor = "#2ecc71";
             }
         });
 
-        setTimeout(endBattle, 500);
+        setTimeout(endBattle, 700);
     }
 }
 
@@ -125,7 +114,7 @@ function startBattleTimer() {
         if (timePercentage < 50) timerBar.style.backgroundColor = "#ffcc00";
         if (timePercentage < 25) timerBar.style.backgroundColor = "#ff4444";
 
-        if (battleTimer < 0) {
+        if (battleTimer <= 0) {
             clearInterval(battleInterval);
             endBattle();
         }
@@ -138,19 +127,6 @@ function endBattle() {
     document.getElementById('battle-overlay').style.display = 'none';
 }
 
-export function renderMistakes(containerId) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = "<h3>Mistakes Summary:</h3>";
-    let hasMistakes = false;
-    for (const [type, count] of Object.entries(mistakeTracker)) {
-        if (count > 0) {
-            container.innerHTML += `<p>${type.toUpperCase()}: ${count}</p>`;
-            hasMistakes = true;
-        }
-    }
-    if (!hasMistakes) container.innerHTML += "<p>Perfect math skills!</p>";
-}
-
 function playerWin() {
     battleActive = false;
     clearInterval(battleInterval);
@@ -158,5 +134,55 @@ function playerWin() {
     renderMistakes('win-mistakes');
     winScreen.style.display = 'flex';
 }
+
+// Mistake Review Logic
+export function renderMistakes(containerId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "<p style='margin-bottom:10px;'>Click a category to review mistakes:</p>";
+    let hasMistakes = false;
+
+    for (const [type, questions] of Object.entries(mistakeDetails)) {
+        if (questions.length > 0) {
+            const btn = document.createElement('div');
+            btn.innerHTML = `${type.toUpperCase()} (${questions.length})`;
+            btn.style.cssText = "background:#444; color:#00ffcc; padding:8px; margin:5px; cursor:pointer; border:1px solid #00ffcc; border-radius:4px; font-size:14px;";
+            btn.onclick = () => showReviewModal(type);
+            container.appendChild(btn);
+            hasMistakes = true;
+        }
+    }
+    if (!hasMistakes) container.innerHTML = "<p style='color:#2ecc71;'>Perfect Score! No mistakes.</p>";
+}
+
+function showReviewModal(type) {
+    const modal = document.getElementById('review-modal');
+    const list = document.getElementById('review-list');
+    const title = document.getElementById('review-title');
+    
+    title.innerText = `REVIEW: ${type.toUpperCase()}`;
+    list.innerHTML = "";
+
+    mistakeDetails[type].forEach(item => {
+        const div = document.createElement('div');
+        div.style.cssText = "border-bottom:1px solid #444; padding:10px; margin-bottom:10px;";
+        
+        let hint = "Double check your mental math!";
+        if (type === "multiplication") hint = "Think of this as repeated addition.";
+        if (type === "division") hint = "Think: how many times does the second number fit into the first?";
+
+        div.innerHTML = `
+            <p style="font-size:18px; color:#ff0055; margin:0;">Question: ${item.q}</p>
+            <p style="font-size:18px; color:#2ecc71; margin:5px 0;">Correct Answer: ${item.a}</p>
+            <p style="font-size:12px; color:#aaa; font-style:italic;">Note: ${hint}</p>
+        `;
+        list.appendChild(div);
+    });
+
+    modal.style.display = "flex";
+}
+
+document.getElementById('close-review').onclick = () => {
+    document.getElementById('review-modal').style.display = "none";
+};
 
 winRetryBtn.addEventListener('click', () => location.reload());
