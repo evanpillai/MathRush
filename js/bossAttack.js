@@ -1,5 +1,6 @@
 import mathQuestions from './questions.js';
 import { setGameStarted, gameStarted } from './menu.js';
+import { mistakeTracker, renderMistakes } from './spriteAttack.js';
 
 const questionText = document.getElementById('question-text');
 const timerDisplay = document.getElementById('timer-val');
@@ -97,18 +98,13 @@ function fireLasers() {
     lasersActive = true;
     checkCollision();
 
-    // End attack after 4 seconds and enter cooldown
     setTimeout(() => {
         if (lasersActive) {
             lasersActive = false;
-            
-            // Cleanup visuals
             document.querySelectorAll('.laser-beam').forEach(l => l.remove());
             stormCloud.style.top = "-25%";
             player.style.filter = "none";
             questionText.innerText = "BOSS IS RECHARGING...";
-
-            // Start 10 second cooldown
             startCooldown(10);
         }
     }, 4000);
@@ -126,7 +122,7 @@ function startCooldown(duration) {
         if (cooldownLeft <= 0) {
             clearInterval(cooldownInterval);
             timerLabel.innerText = "TIME REMAINING: ";
-            initAttack(); // Restart attack cycle
+            initAttack(); 
         }
     }, 1000);
 }
@@ -158,6 +154,16 @@ function checkCollision() {
             touchStartTime = Date.now();
             player.style.filter = "brightness(3) saturate(2) hue-rotate(90deg)";
         } else if (Date.now() - touchStartTime > GRACE_PERIOD) {
+            // Check if they were standing on a tile with a wrong answer when hit by laser
+            const standingTile = Array.from(tiles).find(t => {
+                const r = t.getBoundingClientRect();
+                return playerRect.left < r.right && playerRect.right > r.left;
+            });
+            
+            if (standingTile && standingTile.dataset.value !== currentQuestion.answer) {
+                mistakeTracker[currentQuestion.type]++;
+            }
+            
             triggerGameOver();
             return;
         }
@@ -178,6 +184,10 @@ function triggerGameOver() {
     }
     finalTimeTxt.innerText = survived;
     bestTimeTxt.innerText = best;
+    
+    // Render mistakes to death screen
+    renderMistakes('death-mistakes');
+    
     deathScreen.style.display = 'flex';
 }
 
