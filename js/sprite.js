@@ -1,6 +1,7 @@
 import { startMathBattle,battleActive, setBattleActive } from './spriteAttack.js';
 import { SWORDSLICE } from './const.js';
 import { gameStarted } from './menu.js';
+import { bossInvulnerable } from './bossAttack.js';
 
 const player = document.getElementById('player');
 const gameBox = document.getElementById('game-container');
@@ -197,7 +198,7 @@ function isPixelCollision(hitbox, bossImg) {
 
 function checkBossHit(hitbox) {
     const bossImg = document.getElementById('boss');
-    if (!bossImg) return;
+    if (!bossImg || bossInvulnerable) return;
 
     const bRect = bossImg.getBoundingClientRect();
     const hRect = hitbox.getBoundingClientRect();

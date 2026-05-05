@@ -1,5 +1,6 @@
 import mathQuestions from './questions.js';
 import { setGameStarted, gameStarted } from './menu.js';
+import { battleActive } from './spriteAttack.js';
 import { mistakeDetails, renderMistakes } from './spriteAttack.js';
 
 const questionText = document.getElementById('question-text');
@@ -15,8 +16,9 @@ const deathScreen = document.getElementById('death-screen');
 const finalTimeTxt = document.getElementById('final-time');
 const bestTimeTxt = document.getElementById('best-time');
 const retryBtn = document.getElementById('retry-btn');
+const timerSuffix = document.getElementById('timer-suffix')
 
-
+export let bossInvulnerable = false; 
 let currentQuestion = null;
 let attackInterval;
 let lasersActive = false;
@@ -27,6 +29,10 @@ const GRACE_PERIOD = 1000;
 
 const startTimerInterval = setInterval(() => {
     if (gameStarted) {
+        bossInvulnerable = true;
+        if (!gameStartTime) {
+            gameStartTime = Date.now();
+        }
         if (!gameStartTime) gameStartTime = Date.now();
         startDelay--;
         timerDisplay.innerText = startDelay;
@@ -40,12 +46,17 @@ const startTimerInterval = setInterval(() => {
 
 export function setLasers(active) { lasersActive = active; }
 
-function initAttack() {
+export function initAttack() {
+    bossInvulnerable = true;
+    boss.style.filter = 'grayscale(100%)';
+    boss.classList.add('invulnerable');
     lasersActive = false;
     touchStartTime = null;
     stormCloud.style.top = "-25%";
     document.querySelectorAll('.laser-beam').forEach(l => l.remove());
     player.style.filter = "none";
+    timerLabel.innerText = "TIME REMAINING: ";
+    timerSuffix.innerText = "s";
 
     currentQuestion = mathQuestions[Math.floor(Math.random() * mathQuestions.length)];
     questionText.innerText = `BOSS: What is ${currentQuestion.question}?`;
@@ -107,6 +118,9 @@ function fireLasers() {
 }
 
 function startCooldown(duration) {
+    bossInvulnerable = false; // BOSS IS NOW VULNERABLE
+    boss.style.filter = 'grayscale(0%)';
+    boss.classList.remove('invulnerable');
     let cooldownLeft = duration;
     timerLabel.innerText = "COOLDOWN: ";
     timerDisplay.innerText = cooldownLeft;
@@ -118,8 +132,17 @@ function startCooldown(duration) {
             timerLabel.innerText = "TIME REMAINING: ";
             initAttack();
         }
+
+        if (battleActive) {   
+            clearInterval(cooldownInterval);
+            timerDisplay.innerText = '';
+            timerSuffix.innerText = '';
+            timerLabel.innerText = "Boss Attacked!";      
+        }
+
     }, 1000);
 }
+
 
 function createLaserVisual(xPosition) {
     const laser = document.createElement('div');

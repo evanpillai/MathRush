@@ -1,3 +1,5 @@
+import { initAttack } from "./bossAttack.js";
+
 import mathQuestions from './questions.js';
 
 const winScreen = document.getElementById('win-screen');
@@ -100,8 +102,10 @@ function handleAnswer(isCorrect, clickedBtn) {
         });
 
         setTimeout(endBattle, 700);
+        initAttack();
     }
 }
+    
 
 function startBattleTimer() {
     if (battleInterval) clearInterval(battleInterval);
@@ -114,10 +118,15 @@ function startBattleTimer() {
         if (timePercentage < 50) timerBar.style.backgroundColor = "#ffcc00";
         if (timePercentage < 25) timerBar.style.backgroundColor = "#ff4444";
 
+        if (battleTimer < 0 || bossHealth <= 0) {
+            clearInterval(battleInterval);
         if (battleTimer <= 0) {
             clearInterval(battleInterval);
             endBattle();
+            initAttack();
         }
+    }
+        
     }, 1000);
 }
 
@@ -125,6 +134,8 @@ function endBattle() {
     battleActive = false;
     clearInterval(battleInterval);
     document.getElementById('battle-overlay').style.display = 'none';
+
+    // Resume normal gameplay or trigger boss death
 }
 
 function playerWin() {
